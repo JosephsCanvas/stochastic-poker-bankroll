@@ -1,0 +1,10 @@
+[theme]
+# Poker table inspired professional theme
+primaryColor = "#D4AF37"          # Gold - buttons, sliders, links
+backgroundColor = "#1A1A1A"        # Dark black background
+secondaryBackgroundColor = "#2D2D2D"  # Slightly lighter for cards/sidebar
+textColor = "#F5F5DC"             # Cream white for readability
+font = "serif"                    # Professional serif font
+
+[browser]
+gatherUsageStats = false
