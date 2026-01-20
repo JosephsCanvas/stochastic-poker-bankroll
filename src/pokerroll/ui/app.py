@@ -12,6 +12,17 @@ import plotly.graph_objects as go
 import streamlit as st
 from numpy.typing import NDArray
 
+from pokerroll.bridge.stats import calculate_drift_diffusion
+from pokerroll.metrics.risk import (
+    confidence_intervals,
+    expected_final_value,
+    final_value_confidence_interval,
+    max_drawdown_stats,
+    probability_of_ruin,
+    sharpe_ratio,
+)
+from pokerroll.sim.bankroll import BankrollConfig, simulate_bankroll_paths
+
 # Professional poker table color palette
 COLORS = {
     "felt_green": "#1B5E20",
@@ -34,35 +45,35 @@ COLORS = {
 CUSTOM_CSS = """
 <style>
     @import url('https://fonts.googleapis.com/css2?family=Crimson+Pro:wght@400;600;700&family=Inter:wght@300;400;500;600&display=swap');
-    
+
     /* Professional typography */
     h1, h2, h3, h4 {
         font-family: 'Crimson Pro', Georgia, serif !important;
     }
-    
+
     h1 {
         border-bottom: 2px solid #D4AF37;
         padding-bottom: 0.5rem;
     }
-    
+
     /* Sidebar accent */
     [data-testid="stSidebar"] {
         border-right: 3px solid #D4AF37;
     }
-    
+
     /* Button styling */
     .stButton > button[kind="primary"] {
         background: linear-gradient(135deg, #1B5E20 0%, #2E7D32 100%) !important;
         border: 2px solid #D4AF37 !important;
         font-weight: 600;
     }
-    
+
     .stButton > button[kind="secondary"] {
         background: linear-gradient(135deg, #5D4037 0%, #795548 100%) !important;
         border: 2px solid #D4AF37 !important;
         color: #F5F5DC !important;
     }
-    
+
     /* Metric card enhancement */
     [data-testid="stMetric"] {
         background: rgba(27, 94, 32, 0.15);
@@ -70,7 +81,7 @@ CUSTOM_CSS = """
         border-radius: 8px;
         padding: 0.75rem;
     }
-    
+
     /* Expander styling */
     .streamlit-expanderHeader {
         border: 1px solid #5D4037 !important;
@@ -78,17 +89,6 @@ CUSTOM_CSS = """
     }
 </style>
 """
-
-from pokerroll.metrics.risk import (
-    confidence_intervals,
-    expected_final_value,
-    final_value_confidence_interval,
-    max_drawdown_stats,
-    probability_of_ruin,
-    sharpe_ratio,
-)
-from pokerroll.sim.bankroll import BankrollConfig, simulate_bankroll_paths
-from pokerroll.bridge.stats import calculate_drift_diffusion
 
 
 class StakeSizingResult(NamedTuple):

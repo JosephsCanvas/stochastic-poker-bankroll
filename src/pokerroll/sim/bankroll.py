@@ -5,7 +5,6 @@ modeling per-hand profit/loss as a normally distributed random variable.
 """
 
 from dataclasses import dataclass
-from typing import Optional
 
 import numpy as np
 from numpy.typing import NDArray
@@ -29,7 +28,7 @@ class BankrollConfig:
     winrate_bb_per_100: float
     stdev_bb_per_100: float
     bb_size: float
-    seed: Optional[int] = None
+    seed: int | None = None
 
     def __post_init__(self) -> None:
         """Validate configuration parameters."""

@@ -4,8 +4,8 @@ This module provides helper functions to extract drift and diffusion
 constants from hand history data, compatible with PokerKit's data structures.
 """
 
+from collections.abc import Sequence
 from dataclasses import dataclass
-from typing import Sequence
 
 import numpy as np
 from numpy.typing import NDArray
