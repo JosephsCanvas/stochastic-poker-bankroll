@@ -19,38 +19,46 @@ class TestProbabilityOfRuin:
 
     def test_all_ruined(self) -> None:
         """Test when all paths experience ruin."""
-        paths = np.array([
-            [100, 50, 0, 0],
-            [100, 30, 10, 0],
-            [100, 80, 40, 0],
-        ])
+        paths = np.array(
+            [
+                [100, 50, 0, 0],
+                [100, 30, 10, 0],
+                [100, 80, 40, 0],
+            ]
+        )
         assert probability_of_ruin(paths) == 1.0
 
     def test_none_ruined(self) -> None:
         """Test when no paths experience ruin."""
-        paths = np.array([
-            [100, 110, 120, 130],
-            [100, 90, 100, 110],
-            [100, 105, 115, 125],
-        ])
+        paths = np.array(
+            [
+                [100, 110, 120, 130],
+                [100, 90, 100, 110],
+                [100, 105, 115, 125],
+            ]
+        )
         assert probability_of_ruin(paths) == 0.0
 
     def test_partial_ruin(self) -> None:
         """Test with some paths ruined."""
-        paths = np.array([
-            [100, 50, 0, 0],
-            [100, 120, 140, 160],
-            [100, 80, 60, 40],
-            [100, 90, 0, 0],
-        ])
+        paths = np.array(
+            [
+                [100, 50, 0, 0],
+                [100, 120, 140, 160],
+                [100, 80, 60, 40],
+                [100, 90, 0, 0],
+            ]
+        )
         assert probability_of_ruin(paths) == 0.5
 
     def test_custom_threshold(self) -> None:
         """Test with custom ruin threshold."""
-        paths = np.array([
-            [100, 60, 40, 30],
-            [100, 120, 110, 100],
-        ])
+        paths = np.array(
+            [
+                [100, 60, 40, 30],
+                [100, 120, 110, 100],
+            ]
+        )
         # Default threshold (0) - no ruin
         assert probability_of_ruin(paths, threshold=0.0) == 0.0
         # Threshold at 50 - one path hits below
@@ -67,26 +75,32 @@ class TestMaxDrawdown:
 
     def test_simple_drawdown(self) -> None:
         """Test simple drawdown calculation."""
-        paths = np.array([
-            [100, 150, 120, 180],  # Peak 150, trough 120, DD = 30
-            [100, 80, 60, 90],  # Peak 100, trough 60, DD = 40
-        ])
+        paths = np.array(
+            [
+                [100, 150, 120, 180],  # Peak 150, trough 120, DD = 30
+                [100, 80, 60, 90],  # Peak 100, trough 60, DD = 40
+            ]
+        )
         dd = max_drawdown(paths)
         np.testing.assert_array_almost_equal(dd, [30.0, 40.0])
 
     def test_no_drawdown(self) -> None:
         """Test monotonically increasing path (no drawdown)."""
-        paths = np.array([
-            [100, 110, 120, 130, 140],
-        ])
+        paths = np.array(
+            [
+                [100, 110, 120, 130, 140],
+            ]
+        )
         dd = max_drawdown(paths)
         np.testing.assert_array_almost_equal(dd, [0.0])
 
     def test_all_drawdown(self) -> None:
         """Test monotonically decreasing path (max drawdown = total decline)."""
-        paths = np.array([
-            [100, 80, 60, 40, 20],
-        ])
+        paths = np.array(
+            [
+                [100, 80, 60, 40, 20],
+            ]
+        )
         dd = max_drawdown(paths)
         np.testing.assert_array_almost_equal(dd, [80.0])  # 100 - 20
 
@@ -102,12 +116,14 @@ class TestMaxDrawdownStats:
 
     def test_basic_stats(self) -> None:
         """Test basic drawdown statistics."""
-        paths = np.array([
-            [100, 150, 120, 180],  # DD = 30
-            [100, 80, 60, 90],  # DD = 40
-            [100, 110, 90, 100],  # DD = 20
-            [100, 200, 150, 250],  # DD = 50
-        ])
+        paths = np.array(
+            [
+                [100, 150, 120, 180],  # DD = 30
+                [100, 80, 60, 90],  # DD = 40
+                [100, 110, 90, 100],  # DD = 20
+                [100, 200, 150, 250],  # DD = 50
+            ]
+        )
         stats = max_drawdown_stats(paths)
 
         assert stats.mean_max_drawdown == pytest.approx(35.0)
@@ -120,11 +136,13 @@ class TestExpectedFinalValue:
 
     def test_simple_mean(self) -> None:
         """Test simple mean calculation."""
-        paths = np.array([
-            [100, 150],
-            [100, 50],
-            [100, 100],
-        ])
+        paths = np.array(
+            [
+                [100, 150],
+                [100, 50],
+                [100, 100],
+            ]
+        )
         assert expected_final_value(paths) == pytest.approx(100.0)
 
     def test_empty_paths(self) -> None:
@@ -167,13 +185,15 @@ class TestFinalValueConfidenceInterval:
 
     def test_basic_interval(self) -> None:
         """Test basic confidence interval for final values."""
-        paths = np.array([
-            [100, 90],
-            [100, 95],
-            [100, 100],
-            [100, 105],
-            [100, 110],
-        ])
+        paths = np.array(
+            [
+                [100, 90],
+                [100, 95],
+                [100, 100],
+                [100, 105],
+                [100, 110],
+            ]
+        )
         ci = final_value_confidence_interval(paths, confidence_level=0.80)
 
         assert ci.lower < ci.upper
@@ -186,34 +206,40 @@ class TestSharpeRatio:
     def test_positive_sharpe(self) -> None:
         """Test positive Sharpe ratio calculation."""
         # All paths with positive returns
-        paths = np.array([
-            [100, 120],
-            [100, 115],
-            [100, 125],
-            [100, 110],
-        ])
+        paths = np.array(
+            [
+                [100, 120],
+                [100, 115],
+                [100, 125],
+                [100, 110],
+            ]
+        )
         sr = sharpe_ratio(paths)
         assert sr > 0
 
     def test_negative_sharpe(self) -> None:
         """Test negative Sharpe ratio calculation."""
         # All paths with negative returns
-        paths = np.array([
-            [100, 80],
-            [100, 85],
-            [100, 75],
-            [100, 90],
-        ])
+        paths = np.array(
+            [
+                [100, 80],
+                [100, 85],
+                [100, 75],
+                [100, 90],
+            ]
+        )
         sr = sharpe_ratio(paths)
         assert sr < 0
 
     def test_zero_variance(self) -> None:
         """Test with zero variance returns."""
-        paths = np.array([
-            [100, 110],
-            [100, 110],
-            [100, 110],
-        ])
+        paths = np.array(
+            [
+                [100, 110],
+                [100, 110],
+                [100, 110],
+            ]
+        )
         sr = sharpe_ratio(paths)
         assert sr == 0.0  # By convention when std = 0
 

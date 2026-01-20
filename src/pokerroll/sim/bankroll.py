@@ -5,7 +5,6 @@ modeling per-hand profit/loss as a normally distributed random variable.
 """
 
 from dataclasses import dataclass
-from typing import Optional
 
 import numpy as np
 from numpy.typing import NDArray
@@ -29,7 +28,7 @@ class BankrollConfig:
     winrate_bb_per_100: float
     stdev_bb_per_100: float
     bb_size: float
-    seed: Optional[int] = None
+    seed: int | None = None
 
     def __post_init__(self) -> None:
         """Validate configuration parameters."""
@@ -169,10 +168,12 @@ def simulate_bankroll_paths_vectorized(
 
     # Compute cumulative PnL and add starting bankroll
     cumulative_pnl = np.cumsum(pnl_increments, axis=1)
-    paths = np.column_stack([
-        np.full(n_paths, config.starting_bankroll),
-        config.starting_bankroll + cumulative_pnl,
-    ])
+    paths = np.column_stack(
+        [
+            np.full(n_paths, config.starting_bankroll),
+            config.starting_bankroll + cumulative_pnl,
+        ]
+    )
 
     # Apply Gambler's Ruin: find first ruin point and zero out everything after
     for path_idx in range(n_paths):

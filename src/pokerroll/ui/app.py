@@ -8,9 +8,20 @@ import re
 from typing import NamedTuple
 
 import numpy as np
-import plotly.graph_objects as go
+import plotly.graph_objects as go  # type: ignore[import-untyped]
 import streamlit as st
 from numpy.typing import NDArray
+
+from pokerroll.bridge.stats import calculate_drift_diffusion
+from pokerroll.metrics.risk import (
+    confidence_intervals,
+    expected_final_value,
+    final_value_confidence_interval,
+    max_drawdown_stats,
+    probability_of_ruin,
+    sharpe_ratio,
+)
+from pokerroll.sim.bankroll import BankrollConfig, simulate_bankroll_paths
 
 # Professional poker table color palette
 COLORS = {
@@ -34,35 +45,35 @@ COLORS = {
 CUSTOM_CSS = """
 <style>
     @import url('https://fonts.googleapis.com/css2?family=Crimson+Pro:wght@400;600;700&family=Inter:wght@300;400;500;600&display=swap');
-    
+
     /* Professional typography */
     h1, h2, h3, h4 {
         font-family: 'Crimson Pro', Georgia, serif !important;
     }
-    
+
     h1 {
         border-bottom: 2px solid #D4AF37;
         padding-bottom: 0.5rem;
     }
-    
+
     /* Sidebar accent */
     [data-testid="stSidebar"] {
         border-right: 3px solid #D4AF37;
     }
-    
+
     /* Button styling */
     .stButton > button[kind="primary"] {
         background: linear-gradient(135deg, #1B5E20 0%, #2E7D32 100%) !important;
         border: 2px solid #D4AF37 !important;
         font-weight: 600;
     }
-    
+
     .stButton > button[kind="secondary"] {
         background: linear-gradient(135deg, #5D4037 0%, #795548 100%) !important;
         border: 2px solid #D4AF37 !important;
         color: #F5F5DC !important;
     }
-    
+
     /* Metric card enhancement */
     [data-testid="stMetric"] {
         background: rgba(27, 94, 32, 0.15);
@@ -70,7 +81,7 @@ CUSTOM_CSS = """
         border-radius: 8px;
         padding: 0.75rem;
     }
-    
+
     /* Expander styling */
     .streamlit-expanderHeader {
         border: 1px solid #5D4037 !important;
@@ -78,17 +89,6 @@ CUSTOM_CSS = """
     }
 </style>
 """
-
-from pokerroll.metrics.risk import (
-    confidence_intervals,
-    expected_final_value,
-    final_value_confidence_interval,
-    max_drawdown_stats,
-    probability_of_ruin,
-    sharpe_ratio,
-)
-from pokerroll.sim.bankroll import BankrollConfig, simulate_bankroll_paths
-from pokerroll.bridge.stats import calculate_drift_diffusion
 
 
 class StakeSizingResult(NamedTuple):
@@ -131,18 +131,25 @@ def create_ruin_gauge(ruin_prob: float) -> go.Figure:
             value=ruin_prob * 100,
             number={
                 "suffix": "%",
-                "font": {"size": 28, "family": "Playfair Display, Georgia, serif", "color": COLORS["gold"]}
+                "font": {
+                    "size": 28,
+                    "family": "Playfair Display, Georgia, serif",
+                    "color": COLORS["gold"],
+                },
             },
             title={
                 "text": f"Risk of Ruin<br><span style='font-size:14px;color:{COLORS['cream']}'>{risk_level}</span>",
-                "font": {"family": "Playfair Display, Georgia, serif", "color": COLORS["gold"]}
+                "font": {
+                    "family": "Playfair Display, Georgia, serif",
+                    "color": COLORS["gold"],
+                },
             },
             gauge={
                 "axis": {
                     "range": [0, 100],
                     "tickwidth": 1,
                     "tickcolor": COLORS["cream"],
-                    "tickfont": {"color": COLORS["cream"]}
+                    "tickfont": {"color": COLORS["cream"]},
                 },
                 "bar": {"color": color},
                 "bgcolor": COLORS["black_soft"],
@@ -289,7 +296,11 @@ def create_bankroll_chart(
         arrowcolor=COLORS["gold"],
         ax=50,
         ay=-20,
-        font={"size": 10, "color": COLORS["gold"], "family": "Source Sans Pro, sans-serif"},
+        font={
+            "size": 10,
+            "color": COLORS["gold"],
+            "family": "Source Sans Pro, sans-serif",
+        },
     )
 
     fig.add_annotation(
@@ -303,7 +314,11 @@ def create_bankroll_chart(
         arrowcolor=COLORS["gold"],
         ax=50,
         ay=20,
-        font={"size": 10, "color": COLORS["gold"], "family": "Source Sans Pro, sans-serif"},
+        font={
+            "size": 10,
+            "color": COLORS["gold"],
+            "family": "Source Sans Pro, sans-serif",
+        },
     )
 
     # Add zero line (ruin threshold - red)
@@ -344,7 +359,11 @@ def create_bankroll_chart(
             "text": "Bankroll Evolution Paths",
             "x": 0.5,
             "xanchor": "center",
-            "font": {"family": "Playfair Display, Georgia, serif", "color": COLORS["gold"], "size": 18}
+            "font": {
+                "family": "Playfair Display, Georgia, serif",
+                "color": COLORS["gold"],
+                "size": 18,
+            },
         },
         xaxis_title="Hands Played",
         yaxis_title="Bankroll ($)",
@@ -362,8 +381,14 @@ def create_bankroll_chart(
             "borderwidth": 1,
         },
         height=450,
-        xaxis={"gridcolor": "rgba(93, 64, 55, 0.3)", "zerolinecolor": COLORS["wood_brown"]},
-        yaxis={"gridcolor": "rgba(93, 64, 55, 0.3)", "zerolinecolor": COLORS["wood_brown"]},
+        xaxis={
+            "gridcolor": "rgba(93, 64, 55, 0.3)",
+            "zerolinecolor": COLORS["wood_brown"],
+        },
+        yaxis={
+            "gridcolor": "rgba(93, 64, 55, 0.3)",
+            "zerolinecolor": COLORS["wood_brown"],
+        },
     )
 
     return fig
@@ -453,7 +478,11 @@ def create_drawdown_chart(paths: NDArray[np.float64]) -> go.Figure:
             "text": "Maximum Drawdown Over Time",
             "x": 0.5,
             "xanchor": "center",
-            "font": {"family": "Playfair Display, Georgia, serif", "color": COLORS["gold"], "size": 16}
+            "font": {
+                "family": "Playfair Display, Georgia, serif",
+                "color": COLORS["gold"],
+                "size": 16,
+            },
         },
         xaxis_title="Hands Played",
         yaxis_title="Max Drawdown ($)",
@@ -621,9 +650,7 @@ def parse_hand_history(content: str) -> list[float]:
             continue
 
         # Try to find "won" amounts
-        won_matches = re.findall(
-            r"won\s*\(?\$?([\d,]+\.?\d*)\)?", hand, re.IGNORECASE
-        )
+        won_matches = re.findall(r"won\s*\(?\$?([\d,]+\.?\d*)\)?", hand, re.IGNORECASE)
         lost_matches = re.findall(
             r"lost\s*\(?\$?([\d,]+\.?\d*)\)?", hand, re.IGNORECASE
         )
@@ -777,7 +804,11 @@ def render_sidebar() -> tuple[BankrollConfig, dict]:
         default_bankroll, default_hands, default_wr, default_std, default_bb = preset
     else:
         default_bankroll, default_hands, default_wr, default_std, default_bb = (
-            2000.0, 10000, 5.0, 80.0, 1.0
+            2000.0,
+            10000,
+            5.0,
+            80.0,
+            1.0,
         )
 
     # Hand history upload section
@@ -842,7 +873,9 @@ def render_sidebar() -> tuple[BankrollConfig, dict]:
         "Online Low Stakes": "~50,000 hands = several months regular online",
         "Online Mid Stakes": "~100,000 hands = serious grinder volume",
     }
-    help_text = hands_help.get(player_type, "Total hands to simulate over your timeframe")
+    help_text = hands_help.get(
+        player_type, "Total hands to simulate over your timeframe"
+    )
 
     n_hands = st.sidebar.number_input(
         "Number of Hands",
@@ -857,7 +890,7 @@ def render_sidebar() -> tuple[BankrollConfig, dict]:
     live_hours = n_hands / 30  # ~30 hands/hour live
     online_hours = n_hands / 75  # ~75 hands/hour single table online
     st.sidebar.caption(
-        f"≈ {live_hours:,.0f} hours live ({live_hours/4:,.0f} sessions) "
+        f"≈ {live_hours:,.0f} hours live ({live_hours / 4:,.0f} sessions) "
         f"or {online_hours:,.0f} hours online"
     )
 
@@ -925,7 +958,9 @@ def render_sidebar() -> tuple[BankrollConfig, dict]:
             help="Size of one big blind",
         )
     else:
-        bb_size = stake_options[stake_selection]
+        selected_stake = stake_options[stake_selection]
+        assert selected_stake is not None  # Custom case handled above
+        bb_size = float(selected_stake)
         st.sidebar.caption(f"Big Blind: ${bb_size:.2f}")
 
     st.sidebar.subheader("Simulation Settings")
@@ -1071,9 +1106,7 @@ def render_stake_sizing_tool(config: BankrollConfig, n_hands: int) -> None:
             cached = st.session_state.max_stakes_result
             result = cached["result"]
             if result.max_bb_size is not None:
-                stakes_str = (
-                    f"${result.max_bb_size / 2:.2f}/${result.max_bb_size:.2f}"
-                )
+                stakes_str = f"${result.max_bb_size / 2:.2f}/${result.max_bb_size:.2f}"
                 st.success(
                     f"**Maximum Big Blind:** ${result.max_bb_size:.2f}\n\n"
                     f"(Play up to {stakes_str} stakes)\n\n"

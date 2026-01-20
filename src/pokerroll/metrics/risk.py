@@ -240,7 +240,8 @@ def sharpe_ratio(
     mean_excess = np.mean(excess_returns)
     std_returns = np.std(excess_returns, ddof=1)
 
-    if std_returns == 0:
+    # Use tolerance for near-zero std to handle floating point precision
+    if std_returns < 1e-10:
         return 0.0
 
     return float((mean_excess / std_returns) * np.sqrt(annualization_factor))

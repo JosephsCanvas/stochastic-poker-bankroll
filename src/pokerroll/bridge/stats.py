@@ -4,8 +4,8 @@ This module provides helper functions to extract drift and diffusion
 constants from hand history data, compatible with PokerKit's data structures.
 """
 
+from collections.abc import Sequence
 from dataclasses import dataclass
-from typing import Sequence
 
 import numpy as np
 from numpy.typing import NDArray
@@ -164,7 +164,7 @@ class HandResult:
 
     def get_profit(self, player_id: str | int) -> float:
         """Get profit for a specific player."""
-        ...
+        raise NotImplementedError("Subclasses must implement get_profit")
 
 
 def estimate_from_session_data(
