@@ -164,7 +164,7 @@ class HandResult:
 
     def get_profit(self, player_id: str | int) -> float:
         """Get profit for a specific player."""
-        ...
+        raise NotImplementedError("Subclasses must implement get_profit")
 
 
 def estimate_from_session_data(

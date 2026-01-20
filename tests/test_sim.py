@@ -189,7 +189,7 @@ class TestStdevRuinRelationship:
             assert ruin_probs[i] <= ruin_probs[i + 1] + 0.05, (
                 f"Ruin probability should generally increase with stdev. "
                 f"Got {ruin_probs[i]:.3f} at stdev={stdev_values[i]} and "
-                f"{ruin_probs[i+1]:.3f} at stdev={stdev_values[i+1]}"
+                f"{ruin_probs[i + 1]:.3f} at stdev={stdev_values[i + 1]}"
             )
 
     def test_zero_stdev_no_ruin_with_positive_winrate(self) -> None:
@@ -206,7 +206,9 @@ class TestStdevRuinRelationship:
         paths = simulate_bankroll_paths(config, n_paths=100)
         ruin_prob = probability_of_ruin(paths)
 
-        assert ruin_prob == 0.0, "With zero variance and positive EV, ruin is impossible"
+        assert ruin_prob == 0.0, (
+            "With zero variance and positive EV, ruin is impossible"
+        )
 
     def test_high_stdev_increases_drawdown(self) -> None:
         """Verify that higher stdev leads to larger max drawdowns."""

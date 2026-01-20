@@ -168,10 +168,12 @@ def simulate_bankroll_paths_vectorized(
 
     # Compute cumulative PnL and add starting bankroll
     cumulative_pnl = np.cumsum(pnl_increments, axis=1)
-    paths = np.column_stack([
-        np.full(n_paths, config.starting_bankroll),
-        config.starting_bankroll + cumulative_pnl,
-    ])
+    paths = np.column_stack(
+        [
+            np.full(n_paths, config.starting_bankroll),
+            config.starting_bankroll + cumulative_pnl,
+        ]
+    )
 
     # Apply Gambler's Ruin: find first ruin point and zero out everything after
     for path_idx in range(n_paths):
